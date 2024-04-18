@@ -8,15 +8,27 @@ TERMINAL_COLOGNE_END_INDEX = 1
 
 class Parser:
     def __init__(self):
+        """
+        Creates a new parser object
+        """
+
         self.non_terminals = []
         self.terminals = [Terminal("COLOGNE_START"), Terminal("COLOGNE_END")]
         self.productions = []
         self.closures = []
 
-        self.preps_done = False
         self.top_non_terminal = None
+
+        self.preps_done = False
     
     def __str__(self):
+        """
+        Creates the string representation of a parser object.
+
+        :returns: The string representation of the parser object (Includes the terminals, non terminals and productions).
+        :rtype: str
+        """
+
         ret = ""
         
         # Terminals
@@ -93,7 +105,28 @@ class Parser:
 
         return None
 
+    def add_productions(self, *argv):
+        """
+        Adds a number of productions at the same time to the parser.
+
+        :param *argv: The productions
+        :type *argv: list
+
+        :returns: Nothing.
+        :rtype: None
+        """
+
+        for production in argv:
+            self.add_production(production)
+
     def __create_closures(self):
+        """
+        Generates the closures from the productions
+
+        :returns: Nothing
+        :rtype: None
+        """
+
         first_closure = Closure()
         # first_closure.create_productions(ComplexProduction(self.productions[-1], self.terminals), self.productions)
         first_closure.create_productions(ComplexProduction(self.productions[-1]), self.productions)
@@ -102,7 +135,14 @@ class Parser:
 
         self.closures[-1].generate_next_closures(self.closures, self.productions)
     
-    def parse(self, debug=False):
+    def generate_closures(self, debug=False):
+        """
+        Generates the parsing table from the productions
+
+        :param debug: Whether or not to print debug info
+        :type Debug: bool
+        """
+
         self.__preparsing()
 
         print("Generating closures...")

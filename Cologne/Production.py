@@ -10,4 +10,14 @@ class Production:
             ret += " " + str(symbol)
 
         return ret
-        
+
+    def __eq__(self, other):
+        if not isinstance(other, Production):
+            return False
+
+        return self.result == other.result and self.rule == other.rule
+    
+    def __ne__(self, other):
+        return not (self == other)
+
+

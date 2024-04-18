@@ -86,7 +86,7 @@ class ComplexProduction:
         :returns: This production with the next symbol
         :rtype: ComplexProduction
         """
-        ret = ComplexProduction(self.__get_simple_production())
+        ret = ComplexProduction(self.get_simple_production())
 
         if self.cur_symbol < len(self.rule):
             ret.cur_symbol = self.cur_symbol + 1
@@ -95,7 +95,7 @@ class ComplexProduction:
 
         return ret
         
-    def __get_simple_production(self):
+    def get_simple_production(self):
         """
         Returns the simple production of this production (Without cur_symbol)
 

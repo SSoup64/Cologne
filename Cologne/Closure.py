@@ -36,7 +36,7 @@ class Closure:
 
         return True
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
     def create_productions(self, base_production, productions):
