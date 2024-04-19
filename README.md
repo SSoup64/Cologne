@@ -39,8 +39,8 @@ parser.add_productions(
 )
 ```
 
-6. Generate the parse table.
+6. Generate the closures and the parse table.
 ```Python
-parser.generate_closures(debug=True)
+parser.generate_closures()
 parse_table = Cologne.ParseTable(parser)
 ```
