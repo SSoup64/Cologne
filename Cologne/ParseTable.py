@@ -25,7 +25,14 @@ class ParseTable:
         self.__generate_table()
 
     def __str__(self):
-        return str(pd.DataFrame(self.table))
+        ret = ""
+        
+        for production_index, production in enumerate(self.productions):
+            ret += f"{production_index}. {production}\n"
+        
+        ret += str(pd.DataFrame(self.table))
+        
+        return ret
     
     def __generate_table(self):
         """
@@ -35,19 +42,20 @@ class ParseTable:
         :rtype: None
         """
 
-        COLOGNE_START, COLOGNE_END = self.parser.get_default_terminals()
+        COLOGNE_START, COLOGNE_END = self.parser.get_default_symbols()
 
         # Create the base list (Where everything is an error).
         base_column = [TableAction(TableActionType.ERROR, 0)] * len(self.parser.closures)
         
         # Add the terminals
         for terminal in self.parser.terminals:
-            if terminal != COLOGNE_START:
-                self.table.update({terminal: base_column.copy()})
+            self.table.update({terminal: base_column.copy()})
 
         # Add the non terminals
         for non_terminal in self.parser.non_terminals:
-            self.table.update({non_terminal: base_column.copy()})
+            # Don't include the COLOGNE_START column since we don't need it.
+            if non_terminal != COLOGNE_START:
+                self.table.update({non_terminal: base_column.copy()})
 
         # Generate the actions
         for closure_index, closure in enumerate(self.parser.closures):

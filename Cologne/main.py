@@ -1,9 +1,9 @@
 import Cologne
 
 def example1():
-    parser = Cologne.Parser()
+    parser = Cologne.Parser(Cologne.ParserType.LALR_1)
 
-    COLOGNE_START, COLOGNE_END = parser.get_default_terminals()
+    COLOGNE_START, COLOGNE_END = parser.get_default_symbols()
 
     a = parser.add_terminal(Cologne.Terminal("a"))
     b = parser.add_terminal(Cologne.Terminal("b"))
@@ -28,9 +28,9 @@ def example1():
     return parser
 
 def example2():
-    parser = Cologne.Parser()
+    parser = Cologne.Parser(Cologne.ParserType.LALR_1)
 
-    COLOGNE_START, COLOGNE_END = parser.get_default_terminals()
+    COLOGNE_START, COLOGNE_END = parser.get_default_symbols()
 
     NUMBER = parser.add_terminal(Cologne.Terminal("NUMBER"))
     PLUS = parser.add_terminal(Cologne.Terminal("PLUS"))

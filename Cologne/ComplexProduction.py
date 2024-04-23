@@ -2,12 +2,22 @@ from Production import *
 
 class ComplexProduction:
     def __init__(self, production, lookahead=None):
+        """
+        Creates a new ComplexProduction
+
+        :param production: The simple production on which the complex production is based on
+        :type production: Production
+
+        :param lookahead: The lookahead token (Used only in LALR(1))
+        :type lookahead: None if there is no lookahead, tuple otherwise.
+        """
+
         self.result = production.result
         self.rule = production.rule
         self.cur_symbol = 0
 
         if lookahead == None:
-            self.lookahead = [] # A list of the lookahead tokens. To be used in LALR
+            self.lookahead = tuple() # Create an empty tuple for the lookahead
         else:
             self.lookahead = lookahead
 
@@ -35,7 +45,7 @@ class ComplexProduction:
         if not isinstance(other, ComplexProduction):
             return False
 
-        return other.rule == self.rule and other.result == self.result and other.cur_symbol == self.cur_symbol
+        return self.rule == other.rule and self.result == other.result and self.cur_symbol == other.cur_symbol and self.lookahead == other.lookahead
 
     def __neq__(self, other):
         return not self == other
@@ -114,6 +124,18 @@ class ComplexProduction:
         """
         if self.cur_symbol < len(self.rule):
             self.cur_symbol += 1
+
+    def get_derived_lookaheads(self, parser):
+        """
+        Gets the derived lookahead symbols for hte proudctions derived from this production.
+
+        :param parser: The parser from which the productions and closures are generated.
+        :type parser: Parser
+
+        :returns: The lookahead symbols
+        """
+
+        return ""
 
 
 

@@ -2,24 +2,31 @@ from NonTerminal import *
 from Terminal import *
 from Production import *
 from Closure import *
+from ParserType import *
 
-TERMINAL_COLOGNE_START_INDEX = 0
-TERMINAL_COLOGNE_END_INDEX = 1
+NON_TERMINAL_COLOGNE_START_INDEX = 0
+TERMINAL_COLOGNE_END_INDEX = 0
 
 class Parser:
-    def __init__(self):
+    def __init__(self, parser_type):
         """
         Creates a new parser object
-        """
 
-        self.non_terminals = []
-        self.terminals = [Terminal("COLOGNE_START"), Terminal("COLOGNE_END")]
-        self.productions = []
-        self.closures = []
+        :param parser_type: Indicates whether the parser is LR(0) or LALR(1).
+        :type parser_type: ParserType.
+        """
 
         self.top_non_terminal = None
 
         self.preps_done = False
+
+        self.parser_type = parser_type
+
+        self.non_terminals = [NonTerminal("COLOGNE_START")]
+        self.terminals = [Terminal("COLOGNE_END")]
+        self.productions = []
+        self.closures = []
+        self.lookaheads = {} # Basically, if we want to find the lookhead of a production based on nonterminal, this is gonna be the list of the lookaheads
     
     def __str__(self):
         """
@@ -127,13 +134,20 @@ class Parser:
         :rtype: None
         """
 
+        COLOGNE_START, COLOGNE_END = self.get_default_symbols()
         first_closure = Closure()
-        # first_closure.create_productions(ComplexProduction(self.productions[-1], self.terminals), self.productions)
-        first_closure.create_productions(ComplexProduction(self.productions[-1]), self.productions)
+
+        if self.parser_type == ParserType.LALR_1:
+            base_production_first_closure = ComplexProduction(self.productions[-1], (COLOGNE_END, ));
+            pass
+        elif self.parser_type == ParserType.LR_0:
+            base_production_first_closure = ComplexProduction(self.productions[-1]);
+
+        first_closure.create_productions(base_production_first_closure, self)
         
         self.closures.append(first_closure)
 
-        self.closures[-1].generate_next_closures(self.closures, self.productions)
+        self.closures[-1].generate_next_closures(self.closures, selfs)
     
     def generate_closures(self, debug=False):
         """
@@ -155,7 +169,7 @@ class Parser:
             for ind, closure in enumerate(self.closures):
                 print(f"{ind}. {closure}")
     
-    def get_default_terminals(self):
+    def get_default_symbols(self):
         """
         Returns the two default terminals that the parser creates: COLONGE_START, COLOGNE_END
 
@@ -163,7 +177,7 @@ class Parser:
         :rtype: tuple
         """
         
-        return self.terminals[TERMINAL_COLOGNE_START_INDEX], self.terminals[TERMINAL_COLOGNE_END_INDEX]
+        return self.non_terminals[NON_TERMINAL_COLOGNE_START_INDEX], self.terminals[TERMINAL_COLOGNE_END_INDEX]
     
     def set_top_non_terminal(self, non_terminal):
         """
@@ -192,7 +206,31 @@ class Parser:
             if self.top_non_terminal == None:
                 raise Exception("top_non_terminal not set. Did you forget to call 'parser.set_top_non_terminal'?")
             
-            self.add_production(Production(self.terminals[TERMINAL_COLOGNE_START_INDEX], (self.top_non_terminal, )))
+            self.add_production(Production(self.non_terminals[NON_TERMINAL_COLOGNE_START_INDEX], (self.top_non_terminal, )))
+            
+            if self.parser_type == ParserType.LALR_1:
+                # TODO: Make sure that the generated symbols are only terminals
+                # Generate the possible lookaheads for all non terminals
+                print("Generating the possible lookaheads for non terminals...")
+
+                for symbol in self.non_terminals:
+                    this_lookahead = []
+
+                    for production in self.productions:
+
+                        if production.result == symbol:
+                            this_lookahead.append(production.rule[0])
+
+                    self.lookaheads.update({symbol: tuple(this_lookahead)})
+
+
+
+
+
+
+
+
+
 
 
 
