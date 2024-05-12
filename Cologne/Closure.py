@@ -59,7 +59,7 @@ class Closure:
                 if parser.parser_type == ParserType.LR_0:
                     self.__create_productions_recursion_LR_0(production, parser)
                 elif parser.parser_type == ParserType.LALR_1:
-                    self.__create_productions_recursion_LR_0(production, parser)
+                    self.__create_productions_recursion_LALR_1(production, parser)
 
     def __create_productions_recursion_LR_0(self, base_production, parser):
         """
@@ -111,7 +111,7 @@ class Closure:
             for production in parser.productions:
                 if production.result == symbol and production not in self.productions_checked:
                     self.productions_checked.append(production)
-                    self.__create_productions_recursion_LALR_1(ComplexProduction(production), parser)
+                    self.__create_productions_recursion_LALR_1(ComplexProduction(production, lookahead=production_lookahead), parser)
 
     def generate_next_closures(self, parser):
         """

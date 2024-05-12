@@ -138,7 +138,7 @@ class Parser:
         first_closure = Closure()
 
         if self.parser_type == ParserType.LALR_1:
-            base_production_first_closure = ComplexProduction(self.productions[-1], (COLOGNE_END, ));
+            base_production_first_closure = ComplexProduction(self.productions[-1], {COLOGNE_END});
             pass
         elif self.parser_type == ParserType.LR_0:
             base_production_first_closure = ComplexProduction(self.productions[-1]);
@@ -217,8 +217,8 @@ class Parser:
                     this_lookahead = []
 
                     for production in self.productions:
-                        
-                        if production.result == symbol and symbol in self.terminals:
+                        print(f"{production.result}, {symbol}")
+                        if production.result == symbol and production.rule[0] in self.terminals:
                             this_lookahead.append(production.rule[0])
 
                     self.lookaheads.update({symbol: tuple(this_lookahead)})

@@ -1,7 +1,7 @@
 import Cologne
 
 def example1():
-    parser = Cologne.Parser(Cologne.ParserType.LR_0)
+    parser = Cologne.Parser(Cologne.ParserType.LALR_1)
 
     COLOGNE_START, COLOGNE_END = parser.get_default_symbols()
 
@@ -48,7 +48,7 @@ def example2():
 
     return parser
 
-parser = example2()
+parser = example1()
 parser.generate_closures(debug=True)
 
 # Generate the parse table

@@ -1,5 +1,8 @@
 from Production import *
 
+from NonTerminal import *
+from Terminal import *
+
 class ComplexProduction:
     def __init__(self, production, lookahead=None):
         """
@@ -9,7 +12,7 @@ class ComplexProduction:
         :type production: Production
 
         :param lookahead: The lookahead token (Used only in LALR(1))
-        :type lookahead: None if there is no lookahead, tuple otherwise.
+        :type lookahead: None if there is no lookahead, set otherwise.
         """
 
         self.result = production.result
@@ -17,7 +20,7 @@ class ComplexProduction:
         self.cur_symbol = 0
 
         if lookahead == None:
-            self.lookahead = tuple() # Create an empty tuple for the lookahead
+            self.lookahead = set() # Create an empty tuple for the lookahead
         else:
             self.lookahead = lookahead
 
@@ -96,7 +99,7 @@ class ComplexProduction:
         :returns: This production with the next symbol
         :rtype: ComplexProduction
         """
-        ret = ComplexProduction(self.get_simple_production())
+        ret = ComplexProduction(self.get_simple_production(), self.lookahead)
 
         if self.cur_symbol < len(self.rule):
             ret.cur_symbol = self.cur_symbol + 1
@@ -133,11 +136,20 @@ class ComplexProduction:
         :type parser: Parser
 
         :returns: The lookahead symbols
+        :rtype: set
         """
-        
-        return ""
 
+        if self.cur_symbol + 1 < len(self.rule):
+            # The lookahead is part of the rule
 
+            lookahead_symbol = self.get_prod_next_symbol().get_current_symbol()
+
+            if type(lookahead_symbol) is NonTerminal:
+                return set(parser.lookaheads[lookahead_symbol])
+            else:
+                return set(lookahead_symbol)
+        else:
+            return self.lookahead
 
 
 
