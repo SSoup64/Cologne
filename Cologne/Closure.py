@@ -31,8 +31,8 @@ class Closure:
         if len(other.complex_productions) != len(self.complex_productions):
             return False
 
-        for i in range(len(self.complex_productions)):
-            if self.complex_productions[i] != other.complex_productions[i]:
+        for production in self.complex_productions:
+            if production not in other.complex_productions:
                 return False
 
         return True
