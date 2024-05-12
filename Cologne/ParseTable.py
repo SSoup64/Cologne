@@ -59,32 +59,52 @@ class ParseTable:
 
         # Generate the actions
         for closure_index, closure in enumerate(self.parser.closures):
-            if closure.goto:
-                # The closure is not a final closure
+            # Go over the gotos of the closure
+            for goto_symbol, goto_closure in closure.goto.items():
+                self.__update_table(goto_symbol, closure_index, TableAction(TableActionType.SHIFT, goto_closure))
+            
+            # Check for any final productions
+            for production in closure.complex_productions:
+                # If the production cannot generate more, than it is a final production
+                if not production.can_generate_more():
+                    if production.result == COLOGNE_START:
+                        # We have gotten to the starting production.
+                        # Therefore, we can accept
+                        self.__update_table(COLOGNE_END, closure_index, TableAction(TableActionType.ACCEPT, 0))
+                    else:
+                        # We should reduce it.
 
-                for goto_symbol, goto_closure in closure.goto.items():
-                    self.table[goto_symbol][closure_index] = TableAction(TableActionType.SHIFT, goto_closure)
-            else:
-                # The closure is a final closure
-                # Since it is a final closure, it only has one production
-                final_production = closure.complex_productions[0]
+                        # Find the index of the final production
+                        production_index = self.productions.index(production.get_simple_production())
 
-                if final_production.result == COLOGNE_START:
-                    # We have gotten to the starting production.
-                    # Therefore, we can accept
-                    self.table[COLOGNE_END][closure_index] = TableAction(TableActionType.ACCEPT, 0)
-                else:
-                    # We should reduce it.
+                        # Since right now, the only parser available is LR(0), I am going to hardcode the behavior here.
+                        for key in self.table.keys():
+                            if key in self.parser.terminals:
+                                self.__update_table(key, closure_index, TableAction(TableActionType(TableActionType.REDUCE), production_index))
 
-                    # Find the index of the final production
-                    final_production_index = self.productions.index(final_production.get_simple_production())
+    def __update_table(self, symbol, closure_index, table_action):
+        """
+        Updates the table at a given symbol and closure to a new action and infroms the user if there is a conflict.
 
-                    # Since right now, the only parser available is LR(0), I am going to hardcode the behavior here.
-                    for key in self.table.keys():
-                        if key in self.parser.terminals:
-                            self.table[key][closure_index] = TableAction(TableActionType(TableActionType.REDUCE), final_production_index)
+        :param symbol: The symbol at which to update.
+        :type symbol: Symbol
 
+        :param closure_index: The index of the closure at which to update.
+        :type closure_index: int
 
+        :param table_action: The new action.
+        :type table_action: TableAction
+        """
+
+        if not self.table[symbol][closure_index].action == TableActionType.ERROR:
+            print(f"Conflict at ({symbol}, {closure_index}).")
+            print(f"Previous action: {self.table[symbol][closure_index]}")
+            print(f"Current action: {table_action}")
+
+            if input("Would you like to override it (y/n)? ") == "n":
+                return
+        
+        self.table[symbol][closure_index] = table_action
 
 
 

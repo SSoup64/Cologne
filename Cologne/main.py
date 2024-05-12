@@ -48,7 +48,7 @@ def example2():
 
     return parser
 
-parser = example1()
+parser = example2()
 parser.generate_closures(debug=True)
 
 # Generate the parse table

@@ -134,9 +134,21 @@ class Closure:
         # Check all the new productions possible for each non terminal and create a new closure from each one.
         for symbol in parser.non_terminals:
             self.__create_closure_from_symbol(symbol, parser)
-
     
     def __create_closure_from_symbol(self, symbol, parser):
+        """
+        Finds all the productions whose next symbol is the symbol given and creates a closure from it then adds it to the list of closures.
+
+        :param symbol: The symbol to generate the productions from.
+        :type symbol: Symbol
+
+        :param parser: The parser from which we generate the closures
+        :type parser: Parser
+
+        :returns: Nothing
+        :rtype: None
+        """
+
         # Find the productions from which to create the new closure
         productions_for_new_closure = []
 
@@ -168,37 +180,7 @@ class Closure:
             
             if not cant_add:
                 self.goto[symbol] = next_closure_index
-        
-        """
-        Old
 
-        for my_production in self.complex_productions:
-            next_closure_index = 0
-            
-            new_closure = Closure()
 
-            production = my_production.get_prod_next_symbol()
 
-            if production.is_valid():
-                # TODO: Add all the productions whose next symbol is the same
-                new_closure.create_productions([production], parser)
-                
-                # if check_closure_in_list(new_closure, closures) == False:
-                if new_closure not in closures:
-                    closures.append(new_closure)
-                    next_closure_index = len(closures) - 1
 
-                    closures[-1].generate_next_closures(closures, parser)
-                else:
-                    next_closure_index = closures.index(new_closure)
-                
-                # Check if all the productions in this production are final
-                cant_add = True
-
-                for complex_production in self.complex_productions:
-                    if complex_production.can_generate_more():
-                        cant_add = False
-                
-                if not cant_add:
-                    self.goto[production.get_prev_symbol()] = next_closure_index
-        """
