@@ -143,11 +143,11 @@ class Parser:
         elif self.parser_type == ParserType.LR_0:
             base_production_first_closure = ComplexProduction(self.productions[-1]);
 
-        first_closure.create_productions(base_production_first_closure, self)
+        first_closure.create_productions([base_production_first_closure], self)
         
         self.closures.append(first_closure)
 
-        self.closures[-1].generate_next_closures(self.closures, selfs)
+        self.closures[-1].generate_next_closures(self)
     
     def generate_closures(self, debug=False):
         """
@@ -217,12 +217,20 @@ class Parser:
                     this_lookahead = []
 
                     for production in self.productions:
-
-                        if production.result == symbol:
+                        
+                        if production.result == symbol and symbol in self.terminals:
                             this_lookahead.append(production.rule[0])
 
                     self.lookaheads.update({symbol: tuple(this_lookahead)})
 
+                # DEBUG print lookaheads
+                for symbol, lookaheads in self.lookaheads.items():
+                    to_print = f"{symbol}: "
+
+                    for lookahead_symbol in lookaheads:
+                        to_print += f" {lookahead_symbol}"
+
+                    print(to_print)
 
 
 
